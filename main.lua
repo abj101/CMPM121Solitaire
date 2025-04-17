@@ -5,6 +5,7 @@ io.stdout:setvbuf("no")
 
 require "card"
 require "grabber"
+require "stack"
 
 function love.load()
   love.window.setTitle("Solitaire")
@@ -13,11 +14,14 @@ function love.load()
   
   grabber = GrabberClass:new()
   cardTable = {}
+  stackTable = {}
   
   table.insert(cardTable, CardClass:new(100, 100))
+  table.insert(stackTable, StackClass:new(200, 200))
   
 end
 function love.update()
+  require("lovebird").update()
   grabber:update()
   
   checkForMouseMoving()  
@@ -29,6 +33,10 @@ end
 function love.draw()
   for _, card in ipairs(cardTable) do
     card:draw() --card.draw(card)
+  end
+
+  for _, stack in ipairs(stackTable) do
+    stack:draw()
   end
   
   love.graphics.setColor(1, 1, 1, 1)
