@@ -15,6 +15,7 @@ function GrabberClass:new()
   
   -- NEW: we'll want to keep track of the object (ie. card) we're holding
   grabber.heldObject = nil
+  grabber.nearestStack = nil
   
   return grabber
 end
@@ -37,24 +38,28 @@ end
 
 function GrabberClass:grab()
   self.grabPos = self.currentMousePos
-  print("GRAB - " .. tostring(self.grabPos))
 end
+
 function GrabberClass:release()
-  print("RELEASE - ")
-  -- NEW: some more logic stubs here
-  if self.heldObject == nil then -- we have nothing to release
+  if self.heldObject == nil then 
     return
   end
   
-  -- TODO: eventually check if release position is invalid and if it is
-  -- return the heldObject to the grabPosition
-  local isValidReleasePosition = true -- *insert actual check instead of "true"*
+  local isValidReleasePosition = true
+  
+  if self.nearestStack == nil then
+    isValidReleasePosition = false
+  end
+
   if not isValidReleasePosition then
-    self.heldObject.position = self.grabPosition
+    self.heldObject.position = self.grabPos + self.heldObject.grabOffset
+  else
+    self.heldObject.position = self.nearestStack.cardPos
+    table.insert(self.nearestStack.cardsHeld, self.heldObject)
   end
   
-  self.heldObject.state = 0 -- it's no longer grabbed
-  
+  self.nearestStack = nil
+  self.heldObject.state = 0 
   self.heldObject = nil
   self.grabPos = nil
 end
