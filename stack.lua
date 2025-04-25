@@ -5,54 +5,58 @@ StackClass = {}
 
 Suits = {"C", "H", "D", "S"}
 
-function StackClass:new(xpos, ypos)
-    local stack = {}
-    local metadata = {__index = StackClass}
-    setmetatable(stack, metadata)
+function StackClass:new(xpos, ypos, vers)
+  local stack = {}
+  local metadata = {__index = StackClass}
+  setmetatable(stack, metadata)
+  
+  stack.position = Vector(xpos, ypos)
+  stack.size = Vector(71, 95) * 1.5
+  stack.center = stack.position + stack.size * .5
+  
+  -- 0 == normal, 1 == foundation, 2 == drawPile
+  stack.vers = vers
+  
+  stack.cardsHeld = {}
+  stack.cardPos = stack.position
+  
+  stack.base = love.graphics.newImage("Sprites/Card/base50.png")
 
-    stack.position = Vector(xpos, ypos)
-    stack.size = Vector(71, 95) * 1.5
-    stack.center = stack.position + stack.size * .5
-    
-    stack.isFoundation = 0
-    stack.suit = Suits[1]
-    
-    stack.cardsHeld = {}
-    stack.cardPos = stack.position
-
-
-    return stack
+  return stack
 end
 
 function StackClass:update()
-    local offset = #self.cardsHeld * 37
-    self.cardPos = self.position + Vector(0, offset)
-    
-    for i, card in ipairs(self.cardsHeld) do
-      local cardCenter = card.position + self.size * .5
-      if math.abs(cardCenter.x - self.center.x) > 1 or math.abs(cardCenter.y - self.center.y) > 1 then
-        table.remove(self.cardsHeld, i)
-        offset = #self.cardsHeld * 37
-        self.cardPos = self.position + Vector(0, offset)
-      end
+    if self.vers ~= 1 then
+      local offset = #self.cardsHeld * 37
+      self.cardPos = self.position + Vector(0, offset)
     end
     
-
+    for i, card in ipairs(self.cardsHeld) do
+      if i == #self.cardsHeld then
+        card.flipped = 0
+      end
+      
+      if card.curStack ~= self then
+        table.remove(self.cardsHeld, i)
+      end
+      --TODO
+      --check for cards after removed card to move as stack?
+    end
 end
 
 function StackClass:draw()
-  local base = love.graphics.newImage("Sprites/Card/base50.png")
-  love.graphics.draw(base, self.position.x, self.position.y, 0, 1.5,1.5)
+
+  love.graphics.draw(self.base, self.position.x, self.position.y, 0, 1.5,1.5)
   
-  love.graphics.print(tostring(self.cardPos.y), self.position.x + 40, self.position.y - 20)
+  love.graphics.print(tostring(#self.cardsHeld), self.position.x + 40, self.position.y - 20)
 end
 
 function StackClass:checkForCard(grabber)
   if grabber.heldObject == nil then return false end
   
-  local cardPos = grabber.heldObject.position
-  local cardCenter = cardPos + self.size * .5
-  if math.abs(cardCenter.x - self.center.x) < (self.size.x * .5 + 2.5) and math.abs(cardCenter.y - self.center.y) < (self.size.y * .5 + 2.5) then
+  local card = grabber.heldObject.position
+  local cardCenter = card + self.size * .5
+  if math.abs(cardCenter.x - self.center.x) < (self.size.x * .5 + 2.5) and math.abs(cardCenter.y - self.center.y) < (self.size.y * .5 + 2.5 + (#self.cardsHeld * 37)) then
     return true
   else
     return false

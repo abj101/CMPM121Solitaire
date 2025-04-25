@@ -9,21 +9,33 @@ CARD_STATE = {
   GRABBED = 2
 }
 
-function CardClass:new(xPos, yPos, sprite)
+function CardClass:new(xPos, yPos, sprite, flipped)
   local card = {}
   local metadata = {__index = CardClass}
   setmetatable(card, metadata)
   
-  card.position = Vector(xPos, yPos)
-  card.scale = 1.5
-  card.size = Vector(71, 95) * 1.5
-  card.state = CARD_STATE.IDLE
-  card.flipped = 1
-  card.grabOffset = Vector(0, 0)  
   card.back = love.graphics.newImage("Sprites/Card/Backs/redBack.png")
   card.base = love.graphics.newImage("Sprites/Card/CardBase.png")
   card.card = love.graphics.newImage("Sprites/Card/Faces/" .. sprite .. ".png")
-
+  
+  card.position = Vector(xPos, yPos)
+  
+  card.scale = 1.5
+  card.size = Vector(71, 95) * card.scale
+  
+  card.state = CARD_STATE.IDLE
+  card.flipped = flipped
+  card.grabOffset = Vector(0, 0)  
+  card.curStack = nil
+  
+  card.suit = string.sub(sprite, 1, 1)
+  card.rank = string.sub(sprite, 2, 3)
+  
+  if card.suit == 'H' or card.suit == 'D' then
+    card.color = 'Red'
+  else
+    card.color = 'Black'
+  end
   
   return card
 end
@@ -43,6 +55,7 @@ end
 
 function CardClass:draw()
   -- NEW: drop shadow for non-idle cards
+  
   if self.state ~= CARD_STATE.IDLE then
     love.graphics.setColor(0, 0, 0, 0.8) -- color values [0, 1]
     local offset = 4 * (self.state == CARD_STATE.GRABBED and 2 or 1)
@@ -51,7 +64,7 @@ function CardClass:draw()
   
   love.graphics.setColor(1, 1, 1, 1)
   
-  if self.flipped == 1 then
+  if self.flipped == 0 then
     love.graphics.draw(self.base, self.position.x, self.position.y, 0, 1.5,1.5)
     love.graphics.draw(self.card, self.position.x, self.position.y, 0, 1.5,1.5)  
   else
@@ -63,7 +76,7 @@ function CardClass:draw()
 end
 
 function CardClass:checkForMouseOver(grabber)
-  if self.state == CARD_STATE.GRABBED or grabber.heldObject ~= nil then
+  if self.flipped == 1 or self.state == CARD_STATE.GRABBED or grabber.heldObject ~= nil then
     return
   end
     
@@ -75,10 +88,11 @@ function CardClass:checkForMouseOver(grabber)
     mousePos.y < self.position.y + self.size.y
   
   self.state = isMouseOver and CARD_STATE.MOUSE_OVER or CARD_STATE.IDLE
+
 end
 
 function CardClass:checkGrabbed(grabber)
-  if self.state ~= CARD_STATE.MOUSE_OVER or grabber.heldObject ~= nil then
+  if self.flipped == 1 or self.state ~= CARD_STATE.MOUSE_OVER or grabber.heldObject ~= nil then
     return
   end
   
