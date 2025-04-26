@@ -11,7 +11,7 @@ require "deck"
 math.randomseed(os.time())
 
 function love.load()
-  love.window.setTitle("Solatro")
+  love.window.setTitle("Solitaire")
   screenWidth = 1280
   screenHeight = 720
   love.window.setMode(screenWidth, screenHeight)
@@ -49,6 +49,7 @@ function love.load()
 end
 
 function deckSetup()
+  -- enums
   local suits = {"C", "D", "H", "S"}
   for suit_i = 1, 4 do
     for rank = 1, 13 do
