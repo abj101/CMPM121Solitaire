@@ -174,6 +174,8 @@ function checkForMouseMoving()
     card:checkGrabbed(grabber)
     if card.state == 2 then
       grabber.heldObject = card
+      local temp = table.remove(cardTable, i)
+      table.insert(cardTable, temp)
     end
   end
   
