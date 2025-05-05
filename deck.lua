@@ -41,17 +41,11 @@ function DeckClass:drawThree()
   if #self.drawPile > 0 then
     for _, card in ipairs(self.drawPile) do
       table.insert(self.discardTable, card)
+      card.curStack = self.discardTable
+      card.position = Vector(200, 200)
     end
+    
     self.drawPile = {}
-    
-    for i, card in ipairs(cardTable) do
-      if card.curStack == physDrawPile then
-        card.position = Vector(300 + i * 10, 300)
-        card.curStack = nil
-        table.remove(cardTable, i)
-      end
-    end
-    
     physDrawPile.cardsHeld = {}
   end
   

@@ -34,6 +34,9 @@ function StackClass:update()
     for i, card in ipairs(self.cardsHeld) do
       if i == #self.cardsHeld then
         card.flipped = 0
+        if self.vers == 2 then
+          card.drawPileEnd = true
+        end
       end
       
       if card.curStack ~= self then

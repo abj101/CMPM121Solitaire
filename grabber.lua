@@ -13,8 +13,6 @@ function GrabberClass:new()
   
   grabber.grabPos = nil
   
-  grabber.hoverObjects = {}
-  grabber.heldObject = nil
   grabber.nearestStack = nil
   
   return grabber

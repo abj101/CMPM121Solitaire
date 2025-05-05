@@ -28,7 +28,6 @@ function love.load()
   cardHeight = 95 * scale
   gap = 5  
   yAlign = 100
-  hoverCard = grabber.hoverObjects
   
   counter = 1
   
@@ -163,13 +162,6 @@ function checkForMouseMoving()
   
   for i, card in ipairs(cardTable) do    
     card:checkForMouseOver(grabber)
-    if #hoverCard == 0 then
-      table.insert(hoverCard, card)
-    elseif card.state == 0 and hoverCard[1] == card then
-      table.remove(hoverCard, 1)
-    elseif card.state == 1 and hoverCard[1] ~= card then
-      card.state = 0
-    end
     
     card:checkGrabbed(grabber)
     if card.state == 2 then
