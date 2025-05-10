@@ -131,11 +131,18 @@ function love.update()
   
   checkForMouseMoving()  
   
-  for _, card in ipairs(cardTable) do
+  
+  for i, card in ipairs(cardTable) do
     card:update()
   end
   
   for _, stack in ipairs(stackTable) do
+    for i, card in ipairs(cardTable) do
+      if card.state == 2 then
+        table.remove(cardTable, i)
+        table.insert(cardTable, card)
+      end
+    end
     stack:update()
   end
   
@@ -165,9 +172,16 @@ function checkForMouseMoving()
     
     card:checkGrabbed(grabber)
     if card.state == 2 then
-      grabber.heldObject = card
-      local temp = table.remove(cardTable, i)
-      table.insert(cardTable, temp)
+      local found = false
+      for j, obj in ipairs(card.curStack.cardsHeld) do
+        if obj == card then
+          found = true
+        end
+        if found then
+          obj.state = 2
+          table.insert(grabber.heldObject, obj)
+        end
+      end
     end
   end
   

@@ -27,7 +27,7 @@ function CardClass:new(xPos, yPos, sprite, flipped)
   card.flipped = flipped
   card.grabOffset = Vector(0, 0)  
   card.curStack = nil
-  card.drawPileEnd = false
+  card.noGrab = false
   
   card.suit = string.sub(sprite, 1, 1)
   card.rank = string.sub(sprite, 2, 3)
@@ -77,11 +77,11 @@ function CardClass:draw()
 end
 
 function CardClass:checkForMouseOver(grabber)
-  if self.flipped == 1 or self.state == CARD_STATE.GRABBED or grabber.heldObject ~= nil then
+  if self.flipped == 1 or self.state == CARD_STATE.GRABBED or #grabber.heldObject ~= 0 then
     return
   end
   
-  if self.curStack.vers == 2 and not self.drawPileEnd then
+  if self.noGrab then
     return
   end
     
@@ -97,7 +97,7 @@ function CardClass:checkForMouseOver(grabber)
 end
 
 function CardClass:checkGrabbed(grabber)
-  if self.flipped == 1 or self.state ~= CARD_STATE.MOUSE_OVER or grabber.heldObject ~= nil then
+  if self.flipped == 1 or self.state ~= CARD_STATE.MOUSE_OVER or #grabber.heldObject ~= 0 then
     return
   end
   

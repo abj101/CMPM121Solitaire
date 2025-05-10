@@ -31,19 +31,25 @@ function StackClass:update()
       self.cardPos = self.position + Vector(0, offset)
     end
     
+    if self.vers == 2 then
+      for i, card in ipairs(self.cardsHeld) do
+        if i == #self.cardsHeld then
+          card.noGrab = false
+        else 
+          card.noGrab = true
+        end
+      end
+    end
+    
     for i, card in ipairs(self.cardsHeld) do
       if i == #self.cardsHeld then
         card.flipped = 0
-        if self.vers == 2 then
-          card.drawPileEnd = true
-        end
       end
       
       if card.curStack ~= self then
         table.remove(self.cardsHeld, i)
       end
-      --TODO
-      --check for cards after removed card to move as stack?
+      
     end
 end
 
@@ -55,9 +61,11 @@ function StackClass:draw()
 end
 
 function StackClass:checkForCard(grabber)
-  if grabber.heldObject == nil then return false end
+  if grabber.heldObject[1] == nil  or self.vers == 2 then 
+    return false 
+  end
   
-  local card = grabber.heldObject.position
+  local card = grabber.heldObject[1].position
   local cardCenter = card + self.size * .5
   if math.abs(cardCenter.x - self.center.x) < (self.size.x * .5 + 2.5) and math.abs(cardCenter.y - self.center.y) < (self.size.y * .5 + 2.5 + (#self.cardsHeld * 37)) then
     return true
