@@ -93,6 +93,7 @@ function GrabberClass:release()
       table.insert(self.nearestStack.cardsHeld, heldObject)
       heldObject.curStack = self.nearestStack
     end
+    heldObject.curStack:update()
     heldObject.state = 0
   end
   
