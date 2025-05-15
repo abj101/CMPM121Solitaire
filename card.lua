@@ -85,8 +85,24 @@ function CardClass:checkForMouseOver(grabber)
   if self.noGrab then
     return
   end
-    
+  
+
   local mousePos = grabber.currentMousePos
+
+  for i = #cardTable, 1, -1 do
+    local other = cardTable[i]
+    if other == self then
+      break
+    end
+    if mousePos.x > other.position.x
+       and mousePos.x < other.position.x + other.size.x
+       and mousePos.y > other.position.y
+       and mousePos.y < other.position.y + other.size.y
+    then
+      return
+    end
+  end
+    
   local isMouseOver = 
     mousePos.x > self.position.x and
     mousePos.x < self.position.x + self.size.x and
@@ -94,6 +110,13 @@ function CardClass:checkForMouseOver(grabber)
     mousePos.y < self.position.y + self.size.y
   
   self.state = isMouseOver and CARD_STATE.MOUSE_OVER or CARD_STATE.IDLE
+  
+  if self.state == 1 then
+    for _, card in ipairs(cardTable) do
+      card.state = 0
+    end
+    self.state = 1
+  end
 
 end
 

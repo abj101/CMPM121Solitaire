@@ -179,12 +179,11 @@ function checkForMouseMoving()
   
   for i, card in ipairs(cardTable) do    
     card:checkForMouseOver(grabber)
+    
     resetButton:checkForMouseOver(grabber)
     if #grabber.heldObject == 0 then
       card:checkGrabbed(grabber)
       if card.state == 2 then
-        table.remove(buffer, i)
-        table.insert(buffer, card)
         local found = 100
         for j, obj in ipairs(card.curStack.cardsHeld) do
           if obj == card then
@@ -199,13 +198,19 @@ function checkForMouseMoving()
         end
       end
     end
-    if card.state == 3 then
-      table.remove(buffer, i)
-      table.insert(buffer, card)
+  end
+    
+  for i, card in ipairs(cardTable) do
+    for _, card2 in ipairs(grabber.heldObject) do
+      if card == card2 then
+        table.remove(cardTable, i)
+      end
     end
   end
-
-  cardTable = buffer
+  for i, card in ipairs(grabber.heldObject) do
+    table.insert(cardTable, card) 
+  end
+  
   
   for _, stack in ipairs(stackTable) do
     if stack:checkForCard(grabber) then
