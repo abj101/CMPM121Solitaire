@@ -51,8 +51,8 @@ function love.load()
 
 end
 
+-- Sets up deck by populating it with all the suits and ranks
 function deckSetup()
-  -- enums
   local suits = {"C", "D", "H", "S"}
   for suit_i = 1, 4 do
     for rank = 1, 13 do
@@ -61,6 +61,7 @@ function deckSetup()
   end
 end
 
+-- Shuffles all the cards in deck 
 function shuffle()
   local count = #deckTable
   for i = 1, count do
@@ -71,6 +72,7 @@ function shuffle()
   end
 end
 
+-- Populates deck witha actual card objects
 function deckCards()
   
   local temp = {}
@@ -84,6 +86,7 @@ function deckCards()
   temp = {}
 end
 
+-- Sets up the tableaus and populates them with drawn cards
 function tableauSetup()
   local totalWidth = 7 * cardWidth + 6 * gap
   
@@ -112,6 +115,7 @@ function tableauSetup()
   table.insert(stackTable, physDrawPile)
 end
 
+-- sets up the 4 foundation on the right
 function foundationSetup()
 
   for i = 1, 4 do
@@ -120,6 +124,7 @@ function foundationSetup()
   end
 end
 
+-- Checks for clicks
 function love.mousepressed(x, y, button, istouch, presses)
     if button == 1 then   -- 1 == left mouse button
         physDeck:click(x, y)
@@ -127,6 +132,7 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 end
 
+-- Checks for win condition
 function checkWin()
   if #deckTable == 0 and #physDrawPile.cardsHeld == 0 and #physDeck.discardTable == 0 then
     gameWon = true
@@ -178,9 +184,11 @@ function checkForMouseMoving()
   local buffer = cardTable
   
   for i, card in ipairs(cardTable) do    
-    card:checkForMouseOver(grabber)
     
+    card:checkForMouseOver(grabber)
     resetButton:checkForMouseOver(grabber)
+    
+    -- checks for grabbing and grabbing entire stacks
     if #grabber.heldObject == 0 then
       card:checkGrabbed(grabber)
       if card.state == 2 then
@@ -200,6 +208,7 @@ function checkForMouseMoving()
     end
   end
     
+  -- New reordering functionality to fix flickering 
   for i, card in ipairs(cardTable) do
     for _, card2 in ipairs(grabber.heldObject) do
       if card == card2 then

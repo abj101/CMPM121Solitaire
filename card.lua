@@ -52,10 +52,6 @@ function CardClass:update()
     self.position = currentMousePos + self.grabOffset
   end
   
---  if self.state == 3 then
---    self.position = currentMousePos + self.position - grabber.grabPos
---  end
-  
 end
 
 function CardClass:draw()  
@@ -74,9 +70,9 @@ function CardClass:draw()
     love.graphics.draw(self.back, self.position.x, self.position.y, 0, 1.5,1.5)
   end
   
-  love.graphics.print(tostring(self.state), self.position.x + 20, self.position.y - 20)
 end
 
+-- checks if mouse is over card
 function CardClass:checkForMouseOver(grabber)
   if self.flipped == 1 or self.state == CARD_STATE.GRABBED or #grabber.heldObject ~= 0 then
     return
@@ -89,6 +85,7 @@ function CardClass:checkForMouseOver(grabber)
 
   local mousePos = grabber.currentMousePos
 
+  -- new loop that ensures only one card can be hovered at a time
   for i = #cardTable, 1, -1 do
     local other = cardTable[i]
     if other == self then
@@ -120,6 +117,7 @@ function CardClass:checkForMouseOver(grabber)
 
 end
 
+-- checks for when card is grabbed
 function CardClass:checkGrabbed(grabber)
   if self.flipped == 1 or self.state ~= CARD_STATE.MOUSE_OVER or #grabber.heldObject ~= 0 then
     return

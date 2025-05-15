@@ -34,6 +34,7 @@ function DeckClass:click(mx, my)
   end
 end
 
+-- Draws three cards when the deck is clicked
 function DeckClass:drawThree()
   
   if #physDrawPile.cardsHeld > 0 then

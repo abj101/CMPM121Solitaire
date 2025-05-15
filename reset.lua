@@ -26,6 +26,7 @@ function ResetClass:click(mx, my)
   end
 end
 
+-- checks to see if this button is being clicked and also sets hover status
 function ResetClass:checkForMouseOver(grabber)
   if #grabber.heldObject ~= 0 then
     return
@@ -46,6 +47,7 @@ function ResetClass:checkForMouseOver(grabber)
 
 end
 
+-- runs all necessary functions and variable resets to reset the table
 function ResetClass:reset()
   cardTable = {}
   deckTable = {}
