@@ -48,15 +48,17 @@ function CardClass:update()
     love.mouse.getY()
   )
     
-  if self.state == 2 then
+  if self.state == 2 or self.state == 3 then
     self.position = currentMousePos + self.grabOffset
   end
   
+--  if self.state == 3 then
+--    self.position = currentMousePos + self.position - grabber.grabPos
+--  end
+  
 end
 
-function CardClass:draw()
-  -- NEW: drop shadow for non-idle cards
-  
+function CardClass:draw()  
   if self.state ~= CARD_STATE.IDLE then
     love.graphics.setColor(0, 0, 0, 0.8) -- color values [0, 1]
     local offset = 4 * (self.state == CARD_STATE.GRABBED and 2 or 1)
@@ -71,7 +73,6 @@ function CardClass:draw()
   else
     love.graphics.draw(self.back, self.position.x, self.position.y, 0, 1.5,1.5)
   end
-  
   
   love.graphics.print(tostring(self.state), self.position.x + 20, self.position.y - 20)
 end
@@ -104,6 +105,5 @@ function CardClass:checkGrabbed(grabber)
   if grabber.grabPos ~= nil then
     self.state = 2
     self.grabOffset = self.position - grabber.grabPos
-    print("grabbed")
   end
 end

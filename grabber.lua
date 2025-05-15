@@ -83,6 +83,8 @@ function GrabberClass:release()
     
   local isValidReleasePosition = self:checkValid(self.heldObject[1])
   
+  local n = 0
+  print(#self.heldObject)
   for i, heldObject in ipairs(self.heldObject) do
     if not isValidReleasePosition then
       heldObject.position = self.grabPos + heldObject.grabOffset
@@ -97,5 +99,7 @@ function GrabberClass:release()
   self.nearestStack = nil
   self.heldObject = {}
   self.grabPos = nil
+  print(#self.heldObject)
+
 end
 

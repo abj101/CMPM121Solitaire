@@ -30,6 +30,7 @@ function love.load()
   yAlign = 100
   
   counter = 1
+  gameWon = false
   
   physDeck = DeckClass:new(180 - cardWidth, yAlign)
   physDrawPile = StackClass:new(180 - cardWidth, yAlign + cardHeight + 30, 2)
@@ -91,7 +92,6 @@ function tableauSetup()
     for j = 1, i do
       local flipped = 0
       
--- uncomment after debug
       if j == i then 
         flipped = 0 
       else
@@ -123,6 +123,12 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 end
 
+function checkWin()
+  if #deckTable == 0 and #physDrawPile.cardsHeld == 0 and #physDeck.discardTable == 0 then
+    gameWon = true
+  end
+end
+
 
 function love.update()
   require("lovebird").update()
@@ -131,18 +137,13 @@ function love.update()
   
   checkForMouseMoving()  
   
+  checkWin()
   
   for i, card in ipairs(cardTable) do
     card:update()
   end
   
   for _, stack in ipairs(stackTable) do
-    for i, card in ipairs(cardTable) do
-      if card.state == 2 then
-        table.remove(cardTable, i)
-        table.insert(cardTable, card)
-      end
-    end
     stack:update()
   end
   
@@ -160,6 +161,10 @@ function love.draw()
     card:draw()
   end
   
+  if gameWon then
+    print("Game Won!")
+    love.graphics.print("GAME WON!", screenWidth/2, screenHeight/2)
+  end
 end
 
 function checkForMouseMoving()
@@ -167,23 +172,36 @@ function checkForMouseMoving()
     return
   end
   
+  local buffer = cardTable
+  
   for i, card in ipairs(cardTable) do    
     card:checkForMouseOver(grabber)
-    
-    card:checkGrabbed(grabber)
-    if card.state == 2 then
-      local found = false
-      for j, obj in ipairs(card.curStack.cardsHeld) do
-        if obj == card then
-          found = true
-        end
-        if found then
-          obj.state = 2
-          table.insert(grabber.heldObject, obj)
+    if #grabber.heldObject == 0 then
+      card:checkGrabbed(grabber)
+      if card.state == 2 then
+        table.remove(buffer, i)
+        table.insert(buffer, card)
+        local found = 100
+        for j, obj in ipairs(card.curStack.cardsHeld) do
+          if obj == card then
+            found = j
+            table.insert(grabber.heldObject, obj)
+          end
+          if j > found then
+            obj.state = 3
+            obj.grabOffset = obj.position - grabber.grabPos
+            table.insert(grabber.heldObject, obj)
+          end
         end
       end
     end
+    if card.state == 3 then
+      table.remove(buffer, i)
+      table.insert(buffer, card)
+    end
   end
+
+  cardTable = buffer
   
   for _, stack in ipairs(stackTable) do
     if stack:checkForCard(grabber) then
