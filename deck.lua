@@ -22,9 +22,6 @@ function DeckClass:new(xPos, yPos)
   return deck
 end
 
-function DeckClass:update()
-end
-
 function DeckClass:click(mx, my)
   local isOver =
     mx > self.position.x and

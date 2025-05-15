@@ -7,6 +7,7 @@ require "card"
 require "grabber"
 require "stack"
 require "deck"
+require "reset"
 
 math.randomseed(os.time())
 
@@ -18,9 +19,6 @@ function love.load()
   love.graphics.setBackgroundColor(0, 0.7, 0.2, 1)
   
   grabber = GrabberClass:new()
-  cardTable = {}
-  deckTable = {}
-  stackTable = {}
   
   -- Setup Vars
   scale = 1.5
@@ -29,13 +27,18 @@ function love.load()
   gap = 5  
   yAlign = 100
   
+  physDeck = DeckClass:new(180 - cardWidth, yAlign)
+  physDrawPile = StackClass:new(180 - cardWidth, yAlign + cardHeight + 30, 2)
+  resetButton = ResetClass:new(180 - cardWidth, screenHeight - 180)
+  
+  -- Table Setup 
+  cardTable = {}
+  deckTable = {}
+  stackTable = {}
+  
   counter = 1
   gameWon = false
   
-  physDeck = DeckClass:new(180 - cardWidth, yAlign)
-  physDrawPile = StackClass:new(180 - cardWidth, yAlign + cardHeight + 30, 2)
-  
-  -- Table Setup Functions
   deckSetup()
 
   shuffle(deckTable)
@@ -120,6 +123,7 @@ end
 function love.mousepressed(x, y, button, istouch, presses)
     if button == 1 then   -- 1 == left mouse button
         physDeck:click(x, y)
+        resetButton:click(x, y)
     end
 end
 
@@ -129,11 +133,9 @@ function checkWin()
   end
 end
 
-
 function love.update()
   require("lovebird").update()
   grabber:update()
-  physDeck:update()
   
   checkForMouseMoving()  
   
@@ -152,6 +154,7 @@ end
 function love.draw()
   
   physDeck:draw()
+  resetButton:draw()
   
   for _, stack in ipairs(stackTable) do
     stack:draw()
@@ -176,6 +179,7 @@ function checkForMouseMoving()
   
   for i, card in ipairs(cardTable) do    
     card:checkForMouseOver(grabber)
+    resetButton:checkForMouseOver(grabber)
     if #grabber.heldObject == 0 then
       card:checkGrabbed(grabber)
       if card.state == 2 then
